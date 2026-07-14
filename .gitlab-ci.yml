@@ -1,0 +1,24 @@
+# GitLab CI/CD → Trigger.dev
+#
+# On every push to `main`, deploy the Trigger.dev tasks to the cloud.
+#
+# Requires a GitLab CI/CD variable (Settings → CI/CD → Variables):
+#   TRIGGER_ACCESS_TOKEN = a Trigger.dev Personal Access Token (tr_pat_...)
+#     Create it at: Trigger.dev dashboard → account menu → Personal Access Tokens.
+#     Mark the variable as "Masked" and "Protected".
+#
+# The project ref is read from trigger.config.ts (proj_fpcskqpjzhmqkrossipd).
+# Keep the pinned CLI version in step with @trigger.dev/sdk in package.json.
+
+image: node:22
+
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - npm ci
+    - npx trigger.dev@4.5.4 deploy

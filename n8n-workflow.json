@@ -1,0 +1,54 @@
+{
+  "name": "Company Research → Trigger.dev report",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Company Research Intake",
+        "formDescription": "Submit a company profile to generate a strategy report.",
+        "formFields": {
+          "values": [
+            { "fieldLabel": "Company Name", "fieldType": "text", "requiredField": true },
+            { "fieldLabel": "Industry", "fieldType": "text", "requiredField": true },
+            { "fieldLabel": "Challenge", "fieldType": "text", "requiredField": true },
+            { "fieldLabel": "Goal", "fieldType": "text", "requiredField": true }
+          ]
+        },
+        "options": {}
+      },
+      "id": "form-trigger",
+      "name": "Research Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [0, 0],
+      "webhookId": "company-research-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.trigger.dev/api/v1/tasks/generate-report/trigger",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ payload: { companyName: $json['Company Name'], industry: $json['Industry'], challenge: $json['Challenge'], goal: $json['Goal'] } }) }}",
+        "options": {}
+      },
+      "id": "trigger-dev-call",
+      "name": "Trigger report task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 0]
+    }
+  ],
+  "connections": {
+    "Research Form": {
+      "main": [
+        [
+          { "node": "Trigger report task", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "pinData": {}
+}
