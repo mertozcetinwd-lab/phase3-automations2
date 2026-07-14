@@ -1,0 +1,37 @@
+# GitHub Actions → Trigger.dev
+#
+# On every push to `main`, deploy the Trigger.dev tasks to the cloud.
+#
+# Requires a repository secret (Settings → Secrets and variables → Actions):
+#   TRIGGER_ACCESS_TOKEN = a Trigger.dev Personal Access Token (tr_pat_...)
+#     Create it at: Trigger.dev dashboard → account menu → Personal Access Tokens.
+#
+# The project ref is read from trigger.config.ts (proj_fpcskqpjzhmqkrossipd).
+# Keep the pinned CLI version in step with @trigger.dev/sdk in package.json.
+
+name: Deploy to Trigger.dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Trigger.dev
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+        run: npx trigger.dev@4.5.4 deploy
